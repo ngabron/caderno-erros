@@ -1,0 +1,1577 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Caderno de Erros — SEFAZ-GO</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' rx='20' fill='%239b7fc4'/><text y='72' x='50' text-anchor='middle' font-size='60'>📓</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --rose: #e8a0b4;
+    --rose-deep: #c96b8a;
+    --lilac: #c9b8e8;
+    --lilac-deep: #9b7fc4;
+    --cream: #fdf8f5;
+    --ink: #2a1f2e;
+    --ink-soft: #5a4a60;
+    --ink-muted: #9a8aa0;
+    --surface: #fff9fb;
+    --surface2: #f5eef8;
+    --border: #e8ddf0;
+    --accent: #f0c4d4;
+    --green: #7ec8a0;
+    --orange: #f0a070;
+    --red: #e87878;
+    --shadow: 0 4px 24px rgba(180,120,160,0.10);
+    --shadow-lg: 0 8px 40px rgba(180,120,160,0.18);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--cream);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    min-height: 100vh;
+  }
+
+  /* BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed; inset: 0; z-index: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 10% 20%, rgba(201,184,232,0.18) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 50% at 90% 80%, rgba(232,160,180,0.15) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .app { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 32px 20px 60px; }
+
+  /* HEADER */
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+    animation: fadeDown 0.6s ease both;
+  }
+  .header-eyebrow {
+    font-size: 11px; letter-spacing: 3px; text-transform: uppercase;
+    color: var(--rose-deep); font-weight: 600; margin-bottom: 8px;
+  }
+  header h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: clamp(28px, 5vw, 42px);
+    color: var(--ink);
+    line-height: 1.15;
+  }
+  header h1 em { color: var(--lilac-deep); font-style: italic; }
+  .header-sub {
+    margin-top: 10px; color: var(--ink-muted); font-size: 14px; font-weight: 300;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex; gap: 4px;
+    background: var(--surface2); border-radius: 16px; padding: 5px;
+    margin-bottom: 28px;
+    border: 1px solid var(--border);
+    animation: fadeUp 0.5s 0.1s ease both;
+  }
+  .tab {
+    flex: 1; padding: 10px 8px; border: none; background: none;
+    border-radius: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500; color: var(--ink-muted);
+    transition: all 0.2s; white-space: nowrap;
+  }
+  .tab.active {
+    background: white; color: var(--ink);
+    box-shadow: var(--shadow);
+  }
+  .tab:hover:not(.active) { color: var(--ink); }
+
+  /* PANELS */
+  .panel { display: none; animation: fadeUp 0.35s ease both; }
+  .panel.active { display: block; }
+
+  /* CARD */
+  .card {
+    background: white; border-radius: 20px;
+    border: 1px solid var(--border);
+    box-shadow: var(--shadow);
+    padding: 28px;
+    margin-bottom: 20px;
+  }
+  .card-title {
+    font-family: 'DM Serif Display', serif;
+    font-size: 17px; color: var(--ink); margin-bottom: 18px;
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .icon { font-size: 20px; }
+
+  /* FORM */
+  label {
+    display: block; font-size: 12px; font-weight: 600;
+    color: var(--ink-soft); text-transform: uppercase; letter-spacing: 1px;
+    margin-bottom: 7px;
+  }
+  input[type=text], textarea, select {
+    width: 100%; padding: 12px 16px;
+    border: 1.5px solid var(--border); border-radius: 12px;
+    background: var(--surface); color: var(--ink);
+    font-family: 'DM Sans', sans-serif; font-size: 14px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    resize: vertical;
+    outline: none;
+  }
+  input[type=text]:focus, textarea:focus, select:focus {
+    border-color: var(--lilac-deep);
+    box-shadow: 0 0 0 3px rgba(155,127,196,0.12);
+  }
+  textarea { min-height: 90px; line-height: 1.6; }
+
+  .form-row { margin-bottom: 18px; }
+  .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 18px; }
+  @media(max-width:560px) { .form-grid { grid-template-columns: 1fr; } }
+
+  /* AI TOGGLE */
+  .ai-toggle-row {
+    display: flex; align-items: center; gap: 12px;
+    padding: 14px 16px; background: linear-gradient(135deg, #fdf0f7, #f5eeff);
+    border-radius: 12px; border: 1px solid var(--border); margin-bottom: 18px;
+    cursor: pointer; user-select: none;
+  }
+  .toggle-switch {
+    width: 40px; height: 22px; background: var(--border);
+    border-radius: 11px; position: relative; transition: background 0.25s; flex-shrink: 0;
+  }
+  .toggle-switch.on { background: var(--lilac-deep); }
+  .toggle-switch::after {
+    content: ''; position: absolute; top: 3px; left: 3px;
+    width: 16px; height: 16px; border-radius: 50%; background: white;
+    transition: transform 0.25s; box-shadow: 0 1px 4px rgba(0,0,0,0.2);
+  }
+  .toggle-switch.on::after { transform: translateX(18px); }
+  .ai-toggle-label { font-size: 13px; color: var(--ink-soft); }
+  .ai-toggle-label strong { color: var(--lilac-deep); }
+
+  /* BUTTONS */
+  .btn {
+    padding: 13px 28px; border: none; border-radius: 14px;
+    font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; transition: all 0.2s; letter-spacing: 0.3px;
+  }
+  .btn-primary {
+    background: linear-gradient(135deg, var(--rose-deep), var(--lilac-deep));
+    color: white;
+    box-shadow: 0 4px 16px rgba(155,127,196,0.3);
+  }
+  .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 24px rgba(155,127,196,0.4); }
+  .btn-primary:active { transform: none; }
+  .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .btn-ghost { background: var(--surface2); color: var(--ink-soft); border: 1px solid var(--border); }
+  .btn-ghost:hover { background: var(--border); }
+  .btn-row { display: flex; gap: 10px; justify-content: flex-end; flex-wrap: wrap; }
+
+  /* AI RESULT */
+  .ai-result {
+    margin-top: 16px; padding: 16px 18px;
+    background: linear-gradient(135deg, #fdf0f7, #f0eeff);
+    border-radius: 14px; border: 1px solid var(--accent);
+    animation: fadeUp 0.4s ease both;
+  }
+  .ai-result-header {
+    display: flex; align-items: center; gap: 8px;
+    font-size: 12px; font-weight: 600; color: var(--lilac-deep);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .ai-result p { font-size: 14px; color: var(--ink-soft); line-height: 1.7; }
+  .ai-tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .ai-tag {
+    padding: 4px 12px; border-radius: 20px; font-size: 12px; font-weight: 600;
+    background: white; border: 1.5px solid var(--lilac);
+    color: var(--lilac-deep);
+  }
+
+  /* LOADING SPINNER */
+  .spinner {
+    display: inline-block; width: 16px; height: 16px;
+    border: 2px solid rgba(255,255,255,0.4); border-top-color: white;
+    border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle;
+  }
+
+  /* ENTRIES LIST */
+  .entries-header {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+  }
+  .entries-count { font-size: 13px; color: var(--ink-muted); }
+  .filter-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; }
+  .filter-pill {
+    padding: 6px 14px; border-radius: 20px; border: 1.5px solid var(--border);
+    background: white; font-size: 12px; font-weight: 500; color: var(--ink-soft);
+    cursor: pointer; transition: all 0.18s;
+  }
+  .filter-pill.active { background: var(--lilac-deep); border-color: var(--lilac-deep); color: white; }
+  .filter-pill:hover:not(.active) { border-color: var(--lilac-deep); color: var(--lilac-deep); }
+
+  .entry-card {
+    background: white; border-radius: 16px; border: 1px solid var(--border);
+    padding: 20px; margin-bottom: 14px;
+    transition: box-shadow 0.2s, transform 0.2s;
+    animation: fadeUp 0.35s ease both;
+  }
+  .entry-card:hover { box-shadow: var(--shadow); transform: translateY(-2px); }
+  .entry-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; flex-wrap: wrap; }
+  .entry-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+  .badge {
+    padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .badge-disc { background: #f0eeff; color: var(--lilac-deep); }
+  .badge-tipo { background: #fff0f5; color: var(--rose-deep); }
+  .entry-date { font-size: 11px; color: var(--ink-muted); white-space: nowrap; }
+  .entry-tema { font-weight: 600; color: var(--ink); margin-top: 10px; font-size: 14px; }
+  .entry-questao {
+    margin-top: 8px; font-size: 13px; color: var(--ink-soft); line-height: 1.6;
+    background: var(--surface2); border-radius: 10px; padding: 12px 14px;
+    white-space: pre-wrap; word-break: break-word;
+    max-height: 80px; overflow: hidden; transition: max-height 0.3s;
+    cursor: pointer;
+  }
+  .entry-questao.expanded { max-height: 400px; }
+  .entry-questao-hint { font-size: 11px; color: var(--ink-muted); margin-top: 4px; }
+  .entry-ai { margin-top: 12px; padding: 12px 14px; background: #fdf0f7; border-radius: 10px; }
+  .entry-ai-label { font-size: 11px; font-weight: 600; color: var(--rose-deep); margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px; }
+  .entry-ai-text { font-size: 13px; color: var(--ink-soft); line-height: 1.6; }
+  .entry-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+  .btn-sm {
+    padding: 6px 14px; border: none; border-radius: 10px;
+    font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500;
+    cursor: pointer; transition: all 0.15s;
+  }
+  .btn-delete { background: #fff0f0; color: var(--red); }
+  .btn-delete:hover { background: var(--red); color: white; }
+  .btn-mastered { background: #f0fff5; color: var(--green); }
+  .btn-mastered:hover { background: var(--green); color: white; }
+  .btn-explain { background: linear-gradient(135deg, #f5eeff, #fdf0f7); color: var(--lilac-deep); border: 1.5px solid var(--lilac); }
+  .btn-explain:hover { background: var(--lilac-deep); color: white; border-color: var(--lilac-deep); }
+  .btn-explain:disabled { opacity: 0.5; cursor: not-allowed; }
+
+  .entry-correcao {
+    margin-top: 10px; padding: 10px 14px;
+    background: linear-gradient(135deg, #fff8e8, #fff3f0);
+    border-radius: 10px; border-left: 3px solid var(--orange);
+    font-size: 13px; color: var(--ink); line-height: 1.5;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .entry-correcao-icon { flex-shrink: 0; }
+  .entry-correcao-text { flex: 1; }
+  .entry-correcao-label { font-size: 10px; font-weight: 600; color: #c07020; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 3px; }
+  .correcao-edit-area {
+    margin-top: 10px; padding: 12px 14px;
+    background: #fff8e8; border-radius: 10px;
+    border: 1.5px solid var(--orange);
+    animation: fadeUp 0.25s ease both;
+  }
+  .correcao-edit-area textarea {
+    width: 100%; min-height: 70px; padding: 8px 10px;
+    border: 1.5px solid #e8c070; border-radius: 8px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    color: var(--ink); background: white; resize: vertical;
+    outline: none; line-height: 1.6; margin-bottom: 8px;
+  }
+  .correcao-edit-area textarea:focus { border-color: var(--orange); }
+  .btn-corrigir { background: #fff3e0; color: #c07020; border: 1.5px solid #f0c070; }
+  .btn-corrigir:hover { background: var(--orange); color: white; border-color: var(--orange); }
+    margin-top: 10px; padding: 10px 14px;
+    background: linear-gradient(135deg, #f5eeff, #fff0f8);
+    border-radius: 10px; border-left: 3px solid var(--lilac-deep);
+    font-size: 13px; color: var(--ink); font-style: italic; line-height: 1.5;
+    display: flex; align-items: flex-start; gap: 8px;
+  }
+  .entry-resumo-icon { font-style: normal; flex-shrink: 0; }
+    margin-top: 12px; padding: 16px 16px;
+    background: linear-gradient(135deg, #f8f0ff, #fff5fb);
+    border-radius: 12px; border: 1.5px solid var(--lilac);
+    animation: fadeUp 0.35s ease both;
+  }
+  .entry-explain-header {
+    display: flex; align-items: center; gap: 6px;
+    font-size: 11px; font-weight: 600; color: var(--lilac-deep);
+    text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;
+  }
+  .entry-explain-body { font-size: 13px; color: var(--ink-soft); line-height: 1.75; }
+  .entry-explain-body strong { color: var(--ink); }
+  .spinner-dark {
+    display: inline-block; width: 14px; height: 14px;
+    border: 2px solid rgba(155,127,196,0.3); border-top-color: var(--lilac-deep);
+    border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle;
+  }
+  .entry-card.mastered { opacity: 0.5; border-color: var(--green); }
+
+  /* STATS */
+  .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 14px; margin-bottom: 24px; }
+  .stat-card {
+    background: white; border-radius: 16px; border: 1px solid var(--border);
+    padding: 18px 16px; text-align: center;
+  }
+  .stat-value { font-family: 'DM Serif Display', serif; font-size: 32px; color: var(--lilac-deep); }
+  .stat-label { font-size: 12px; color: var(--ink-muted); margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+  .chart-title { font-size: 13px; font-weight: 600; color: var(--ink-soft); margin-bottom: 14px; text-transform: uppercase; letter-spacing: 1px; }
+  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+  .bar-label { font-size: 13px; color: var(--ink-soft); width: 140px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .bar-track { flex: 1; height: 10px; background: var(--surface2); border-radius: 5px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 5px; background: linear-gradient(90deg, var(--rose-deep), var(--lilac-deep)); transition: width 0.6s ease; }
+  .bar-count { font-size: 12px; color: var(--ink-muted); width: 28px; text-align: right; }
+
+  .tipo-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; }
+  .tipo-card { background: var(--surface2); border-radius: 12px; padding: 14px; text-align: center; }
+  .tipo-card-val { font-family: 'DM Serif Display', serif; font-size: 24px; color: var(--rose-deep); }
+  .tipo-card-lab { font-size: 11px; color: var(--ink-muted); margin-top: 3px; }
+
+  /* EMPTY */
+  .empty-state { text-align: center; padding: 48px 20px; color: var(--ink-muted); }
+  .empty-state .empty-icon { font-size: 40px; margin-bottom: 12px; }
+  .empty-state p { font-size: 14px; line-height: 1.6; }
+
+  /* ANIMATIONS */
+  @keyframes fadeDown { from { opacity:0; transform:translateY(-16px); } to { opacity:1; transform:none; } }
+  @keyframes fadeUp { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  @keyframes pulse { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+
+  .loading-text { animation: pulse 1.2s infinite; color: var(--ink-muted); font-size: 13px; }
+
+  /* NOTIFICATION */
+  .notif {
+    position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(80px);
+    background: var(--ink); color: white; padding: 12px 22px; border-radius: 14px;
+    font-size: 13px; font-weight: 500; box-shadow: var(--shadow-lg);
+    transition: transform 0.3s; z-index: 999; white-space: nowrap;
+  }
+  .notif.show { transform: translateX(-50%) translateY(0); }
+
+  /* TOPICOS AUTOCOMPLETE */
+  .topico-opt {
+    padding: 10px 16px; font-size: 13px; color: var(--ink-soft); cursor: pointer;
+    border-bottom: 1px solid var(--border); transition: background 0.15s;
+  }
+  .topico-opt:last-child { border-bottom: none; }
+  .topico-opt:hover, .topico-opt.highlighted { background: var(--surface2); color: var(--ink); }
+  .topico-opt mark { background: none; color: var(--lilac-deep); font-weight: 600; }
+  .topico-chip {
+    display: inline-flex; align-items: center; gap: 6px;
+    padding: 4px 10px 4px 12px; border-radius: 20px;
+    background: linear-gradient(135deg, #f0eeff, #fdf0f7);
+    border: 1.5px solid var(--lilac); font-size: 12px; color: var(--lilac-deep); font-weight: 500;
+  }
+  .topico-chip-x { cursor: pointer; font-size: 14px; color: var(--ink-muted); line-height: 1; }
+  .topico-chip-x:hover { color: var(--rose-deep); }
+  .topicos-section-label {
+    padding: 6px 16px 4px; font-size: 10px; font-weight: 600; color: var(--ink-muted);
+    text-transform: uppercase; letter-spacing: 1px; background: var(--surface2);
+  }
+
+  /* API KEY MODAL */
+  .apikey-bar {
+    display: flex; align-items: center; gap: 10px;
+    background: linear-gradient(135deg, #fff8e8, #fff0f5);
+    border: 1.5px solid #f0c080; border-radius: 14px;
+    padding: 12px 16px; margin-bottom: 20px; cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+  .apikey-bar:hover { box-shadow: 0 2px 12px rgba(240,160,80,0.15); }
+  .apikey-bar-icon { font-size: 18px; flex-shrink: 0; }
+  .apikey-bar-text { flex: 1; }
+  .apikey-bar-title { font-size: 13px; font-weight: 600; color: #7a5000; }
+  .apikey-bar-sub { font-size: 12px; color: #b07820; margin-top: 1px; }
+  .apikey-bar.ok { background: linear-gradient(135deg, #f0fff5, #f5fff0); border-color: #a0d8a0; }
+  .apikey-bar.ok .apikey-bar-title { color: #2a6a3a; }
+  .apikey-bar.ok .apikey-bar-sub { color: #5a9a6a; }
+  .apikey-modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 600;
+    background: rgba(42,31,46,0.5); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .apikey-modal-overlay.open { display: flex; }
+  .apikey-modal {
+    background: white; border-radius: 20px; padding: 28px 24px;
+    max-width: 460px; width: 100%; box-shadow: var(--shadow-lg); border: 1px solid var(--border);
+  }
+  .apikey-modal h2 { font-family: 'DM Serif Display', serif; font-size: 20px; margin-bottom: 6px; }
+  .apikey-modal p { font-size: 13px; color: var(--ink-muted); line-height: 1.6; margin-bottom: 16px; }
+  .apikey-modal a { color: var(--lilac-deep); }
+  .apikey-input-wrap { position: relative; margin-bottom: 14px; }
+  .apikey-input-wrap input {
+    width: 100%; padding: 11px 44px 11px 14px;
+    border: 1.5px solid var(--border); border-radius: 12px;
+    font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--ink);
+    background: var(--surface); outline: none; transition: border-color 0.2s;
+    letter-spacing: 0.5px;
+  }
+  .apikey-input-wrap input:focus { border-color: var(--lilac-deep); }
+  .apikey-eye { position: absolute; right: 12px; top: 50%; transform: translateY(-50%);
+    background: none; border: none; cursor: pointer; font-size: 16px; color: var(--ink-muted); }
+  .apikey-status { font-size: 12px; margin-bottom: 14px; min-height: 18px; }
+  .apikey-status.ok { color: #3a8a4a; } .apikey-status.err { color: var(--red); }
+
+  /* MODAL RELATÓRIO */
+  .modal-overlay {
+    display: none; position: fixed; inset: 0; z-index: 500;
+    background: rgba(42,31,46,0.45); backdrop-filter: blur(4px);
+    align-items: center; justify-content: center; padding: 20px;
+  }
+  .modal-overlay.open { display: flex; animation: fadeUp 0.25s ease both; }
+  .modal {
+    background: white; border-radius: 24px; padding: 32px 28px;
+    max-width: 520px; width: 100%; box-shadow: var(--shadow-lg);
+    border: 1px solid var(--border); max-height: 90vh; overflow-y: auto;
+  }
+  .modal-title { font-family: 'DM Serif Display', serif; font-size: 22px; color: var(--ink); margin-bottom: 6px; }
+  .modal-sub { font-size: 13px; color: var(--ink-muted); margin-bottom: 24px; }
+  .modal-section { margin-bottom: 20px; }
+  .modal-section-title { font-size: 11px; font-weight: 600; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 1.2px; margin-bottom: 10px; }
+  .radio-group, .checkbox-group { display: flex; flex-direction: column; gap: 8px; }
+  .radio-opt, .check-opt {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: 12px; border: 1.5px solid var(--border);
+    cursor: pointer; transition: all 0.18s; font-size: 14px; color: var(--ink-soft);
+  }
+  .radio-opt:hover, .check-opt:hover { border-color: var(--lilac-deep); color: var(--ink); }
+  .radio-opt.selected, .check-opt.selected { border-color: var(--lilac-deep); background: #f5eeff; color: var(--ink); }
+  .radio-dot {
+    width: 16px; height: 16px; border-radius: 50%; border: 2px solid var(--border);
+    flex-shrink: 0; transition: all 0.18s; position: relative;
+  }
+  .radio-opt.selected .radio-dot { border-color: var(--lilac-deep); background: var(--lilac-deep); }
+  .radio-opt.selected .radio-dot::after { content: ''; position: absolute; top: 3px; left: 3px; width: 6px; height: 6px; border-radius: 50%; background: white; }
+  .check-box {
+    width: 16px; height: 16px; border-radius: 5px; border: 2px solid var(--border);
+    flex-shrink: 0; display: flex; align-items: center; justify-content: center;
+    font-size: 10px; transition: all 0.18s;
+  }
+  .check-opt.selected .check-box { background: var(--lilac-deep); border-color: var(--lilac-deep); }
+  .date-range { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .modal-footer { display: flex; gap: 10px; justify-content: flex-end; margin-top: 24px; }
+  .btn-report {
+    display: flex; align-items: center; gap: 8px; padding: 12px 22px;
+    border: none; border-radius: 14px;
+    background: linear-gradient(135deg, var(--rose-deep), var(--lilac-deep));
+    color: white; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600;
+    cursor: pointer; box-shadow: 0 4px 16px rgba(155,127,196,0.3); transition: all 0.2s; margin-bottom: 20px;
+  }
+  .btn-report:hover { transform: translateY(-2px); }
+  .btn-report:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+  .progress-bar { height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; margin-top: 10px; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--rose-deep), var(--lilac-deep)); border-radius: 2px; transition: width 0.4s ease; width: 0%; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <header>
+    <div class="header-eyebrow">SEFAZ-GO · 2026</div>
+    <h1>Caderno de <em>Erros</em></h1>
+    <p class="header-sub">Registre, diagnostique e revise — tudo em um lugar</p>
+  </header>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('registrar')">✏️ Registrar</button>
+    <button class="tab" onclick="switchTab('revisar')">📚 Revisar</button>
+    <button class="tab" onclick="switchTab('analise')">📊 Análise</button>
+  </div>
+
+  <!-- PANEL: REGISTRAR -->
+  <div class="panel active" id="panel-registrar">
+    <div class="card">
+      <div class="card-title"><span class="icon">📝</span> Novo Registro</div>
+
+      <div class="form-grid">
+        <div>
+          <label>Disciplina</label>
+          <select id="disciplina">
+            <option value="">Selecione...</option>
+            <option>AFO / Contabilidade Pública</option>
+            <option>Contabilidade Geral</option>
+            <option>Direito Tributário</option>
+            <option>Legislação Tributária Estadual</option>
+            <option>Direito Administrativo</option>
+            <option>Direito Constitucional</option>
+            <option>Direito Civil</option>
+            <option>Direito Penal</option>
+            <option>Economia</option>
+            <option>Estatística</option>
+            <option>Matemática Financeira</option>
+            <option>Sistemas de Amortização</option>
+            <option>Direito Empresarial</option>
+            <option>Tecnologia da Informação</option>
+            <option>Outra</option>
+          </select>
+        </div>
+        <div>
+          <label>Tipo de Erro</label>
+          <select id="tipo-erro">
+            <option value="">Selecione...</option>
+            <option>Conceito equivocado</option>
+            <option>Cálculo / conta errada</option>
+            <option>Pegadinha de banca</option>
+            <option>Confusão entre institutos</option>
+            <option>Leitura descuidada</option>
+            <option>Excesso de confiança</option>
+            <option>Conteúdo não estudado</option>
+            <option>Interpretação de lei</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label>Tópico do Edital</label>
+        <div style="position:relative;">
+          <input type="text" id="tema" placeholder="Selecione ou digite o tópico..." autocomplete="off"
+            oninput="filtrarTopicos(this.value)" onfocus="filtrarTopicos(this.value)" />
+          <div id="topicos-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;
+            background:white;border:1.5px solid var(--lilac-deep);border-radius:12px;
+            box-shadow:var(--shadow-lg);z-index:100;max-height:220px;overflow-y:auto;margin-top:4px;"></div>
+        </div>
+        <div id="topicos-chips" style="display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;"></div>
+      </div>
+
+      <div class="form-row">
+        <label>Questão (cole o enunciado ou descreva)</label>
+        <textarea id="questao" placeholder="Cole a questão completa, ou escreva o contexto do que errou..."></textarea>
+      </div>
+
+      <div class="form-row">
+        <label>Contexto adicional (opcional)</label>
+        <textarea id="contexto" placeholder="O que você pensou na hora? Por que errou? Qual era sua dúvida?" style="min-height:70px;"></textarea>
+      </div>
+
+      <div class="ai-toggle-row" onclick="toggleAI()" id="ai-toggle-row">
+        <div class="toggle-switch on" id="toggle-switch"></div>
+        <div class="ai-toggle-label"><strong>Diagnóstico automático por IA</strong> — a IA analisa o erro e sugere como revisar</div>
+      </div>
+
+      <div id="ai-result-area"></div>
+
+      <!-- API KEY BAR -->
+      <div class="apikey-bar" id="apikey-bar" onclick="abrirApiKeyModal()" style="margin-top:4px;">
+        <span class="apikey-bar-icon" id="apikey-bar-icon">🔑</span>
+        <div class="apikey-bar-text">
+          <div class="apikey-bar-title" id="apikey-bar-title">Configure sua chave de API</div>
+          <div class="apikey-bar-sub" id="apikey-bar-sub">Necessária para usar as funções de IA fora do Claude</div>
+        </div>
+        <span style="color:var(--ink-muted);font-size:18px;">›</span>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="clearForm()">Limpar</button>
+        <button class="btn btn-primary" id="btn-salvar" onclick="salvarRegistro()">Salvar Registro</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- PANEL: REVISAR -->
+  <div class="panel" id="panel-revisar">
+    <div class="entries-header">
+      <div id="entries-count" class="entries-count"></div>
+    </div>
+    <div class="filter-row" id="filter-row"></div>
+    <div id="entries-list"></div>
+  </div>
+
+  <!-- PANEL: ANÁLISE -->
+  <div class="panel" id="panel-analise">
+    <button class="btn-report" onclick="abrirModal()">📄 Baixar Relatório com IA</button>
+    <div class="stats-grid" id="stats-grid"></div>
+    <div class="card" id="card-disciplinas"></div>
+    <div class="card" id="card-tipos" style="margin-top:16px;"></div>
+  </div>
+
+</div>
+
+<div class="notif" id="notif"></div>
+
+<!-- API KEY MODAL -->
+<div class="apikey-modal-overlay" id="apikey-modal-overlay">
+  <div class="apikey-modal">
+    <h2>🔑 Chave de API Anthropic</h2>
+    <p>Para usar as funções de IA fora do Claude.ai, você precisa de uma chave de API própria.<br>
+    Obtenha gratuitamente em <a href="https://console.anthropic.com/settings/keys" target="_blank">console.anthropic.com</a> → API Keys → Create Key.</p>
+    <div class="apikey-input-wrap">
+      <input type="password" id="apikey-input" placeholder="sk-ant-..." spellcheck="false" />
+      <button class="apikey-eye" id="apikey-eye" onclick="toggleApiKeyVis()">👁</button>
+    </div>
+    <div class="apikey-status" id="apikey-status"></div>
+    <div style="display:flex;gap:10px;justify-content:flex-end;">
+      <button class="btn btn-ghost" onclick="fecharApiKeyModal()">Cancelar</button>
+      <button class="btn btn-primary" onclick="testarESalvarApiKey()">Testar e salvar</button>
+    </div>
+    <p style="margin-top:14px;font-size:11px;color:var(--ink-muted);">
+      🔒 A chave é salva apenas no seu navegador (localStorage) e nunca é enviada para outros servidores além da Anthropic.
+    </p>
+  </div>
+</div>
+
+<!-- MODAL RELATÓRIO -->
+<div class="modal-overlay" id="modal-relatorio">
+  <div class="modal">
+    <div class="modal-title">📄 Gerar Relatório</div>
+    <div class="modal-sub">Escolha os filtros para montar o relatório com análise da IA</div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Período</div>
+      <div class="radio-group" id="radio-periodo">
+        <div class="radio-opt selected" data-val="hoje" onclick="selectPeriodo(this)"><div class="radio-dot"></div>Hoje</div>
+        <div class="radio-opt" data-val="semana" onclick="selectPeriodo(this)"><div class="radio-dot"></div>Última semana</div>
+        <div class="radio-opt" data-val="mes" onclick="selectPeriodo(this)"><div class="radio-dot"></div>Último mês</div>
+        <div class="radio-opt" data-val="tudo" onclick="selectPeriodo(this)"><div class="radio-dot"></div>Todo o período</div>
+        <div class="radio-opt" data-val="custom" onclick="selectPeriodo(this)"><div class="radio-dot"></div>Personalizado</div>
+      </div>
+      <div id="custom-dates" style="display:none; margin-top:12px;">
+        <div class="date-range">
+          <div>
+            <label>De</label>
+            <input type="date" id="date-from" />
+          </div>
+          <div>
+            <label>Até</label>
+            <input type="date" id="date-to" />
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal-section">
+      <div class="modal-section-title">Disciplinas (deixe vazio = todas)</div>
+      <div class="checkbox-group" id="check-disciplinas"></div>
+    </div>
+
+    <div id="relatorio-preview" style="margin-top:4px; font-size:13px; color:var(--ink-muted);"></div>
+    <div class="progress-bar" id="progress-bar" style="display:none;"><div class="progress-fill" id="progress-fill"></div></div>
+
+    <div class="modal-footer">
+      <button class="btn btn-ghost" onclick="fecharModal()">Cancelar</button>
+      <button class="btn btn-primary" id="btn-gerar-relatorio" onclick="gerarRelatorio()">Gerar e baixar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── TÓPICOS DO EDITAL ───────────────────────────────────────────────────────
+const TOPICOS = {
+  "AFO / Contabilidade Pública": ["Lei 4.320/1964 — Normas gerais de direito financeiro","Orçamento público — conceitos e princípios","PPA, LDO e LOA","Créditos orçamentários e adicionais","Receita pública — classificação e estágios","Despesa pública — classificação e estágios","Restos a pagar e despesas de exercícios anteriores","Suprimento de fundos","Dívida ativa","MCASP — Manual de Contabilidade Aplicada ao Setor Público","Plano de Contas Aplicado ao Setor Público (PCASP)","Demonstrações contábeis aplicadas ao setor público","Variações patrimoniais aumentativas e diminutivas","Reconhecimento de ativos e passivos","Depreciação, amortização e exaustão no setor público","Controle interno e externo","Lei de Responsabilidade Fiscal (LC 101/2000)","Resultado primário e nominal","Precatórios","SIAF e sistemas de informação"],
+  "Contabilidade Geral": ["Patrimônio — ativo, passivo e PL","Fatos contábeis — permutativos, modificativos e mistos","Plano de contas e escrituração","Balancete de verificação","Balanço Patrimonial","DRE — Demonstração do Resultado do Exercício","DLPA / DMPL","DFC — Demonstração dos Fluxos de Caixa","DVA — Demonstração do Valor Adicionado","Notas explicativas","Receitas e despesas — reconhecimento","Estoques — avaliação e métodos (PEPS, UEPS, Médio)","Ativo imobilizado — reconhecimento e depreciação","Ativo intangível","Operações com mercadorias","Provisões e contingências","Ajuste a valor presente","Equivalência patrimonial","Consolidação de demonstrações","Análise das demonstrações contábeis","Índices de liquidez, endividamento e rentabilidade"],
+  "Direito Tributário": ["Sistema Tributário Nacional — CF/88","Competência tributária","Limitações ao poder de tributar","Imunidades tributárias","Espécies tributárias — impostos, taxas, contribuições","CTN — Código Tributário Nacional","Legislação tributária — fontes e vigência","Interpretação e integração da legislação tributária","Obrigação tributária — principal e acessória","Fato gerador","Sujeito ativo e passivo","Responsabilidade tributária","Crédito tributário — constituição e lançamento","Suspensão do crédito tributário","Extinção do crédito tributário","Exclusão do crédito tributário — isenção e anistia","Garantias e privilégios do crédito tributário","Administração tributária — fiscalização","Dívida ativa e certidões","Processo administrativo fiscal","Reforma tributária — LC 214/2025 (IBS/CBS/IS)"],
+  "Legislação Tributária Estadual": ["ICMS — fato gerador e incidência","ICMS — não incidência e isenção","ICMS — base de cálculo","ICMS — alíquotas (internas e interestaduais)","ICMS — contribuinte e responsável","ICMS — substituição tributária","ICMS — crédito e débito fiscal","ICMS — apuração e pagamento","ICMS — obrigações acessórias","ICMS — importação e exportação","ICMS — diferencial de alíquota (DIFAL)","ICMS — regimes especiais","CTE-GO — Código Tributário Estadual de Goiás","PAT-GO — Processo Administrativo Tributário","Lei 16.469/2009 — PAT","EFD — Escrituração Fiscal Digital","SPED","Nota Fiscal Eletrônica (NF-e)","Benefícios fiscais — GO","ITCD — Imposto sobre Transmissão Causa Mortis e Doação","IPVA — legislação estadual"],
+  "Direito Administrativo": ["Princípios da Administração Pública","Poderes administrativos","Ato administrativo — conceito e elementos","Ato administrativo — atributos","Ato administrativo — classificação","Ato administrativo — extinção e vícios","Organização da Administração Pública","Administração direta e indireta","Agências reguladoras e executivas","Licitação — Lei 14.133/2021","Licitação — modalidades e procedimentos","Contratos administrativos","Serviços públicos","Intervenção do Estado na propriedade","Responsabilidade civil do Estado","Agentes públicos — regime jurídico","Servidores públicos — direitos e deveres","Improbidade administrativa — Lei 8.429/92","Processo administrativo — Lei 9.784/99","Controle da Administração Pública"],
+  "Direito Constitucional": ["Princípios fundamentais — CF/88","Direitos e garantias fundamentais","Direitos sociais","Direitos políticos","Organização do Estado","Repartição de competências","Poder Executivo","Poder Legislativo","Poder Judiciário","Funções essenciais à justiça","Controle de constitucionalidade","Tributação e orçamento — CF/88","Administração Pública — CF/88 art. 37","Servidores públicos — CF/88","Ordem econômica e financeira","Ordem social","Emendas constitucionais recentes"],
+  "Direito Civil": ["Lei de Introdução às Normas do Direito Brasileiro","Pessoa natural — capacidade e personalidade","Pessoa jurídica","Bens — classificação","Fatos, atos e negócios jurídicos","Vícios do negócio jurídico","Prescrição e decadência","Obrigações — modalidades","Adimplemento e extinção das obrigações","Inadimplemento — mora e perdas e danos","Contratos em geral","Contratos em espécie","Responsabilidade civil","Direitos reais — posse e propriedade"],
+  "Direito Penal": ["Princípios do Direito Penal","Lei penal no tempo e no espaço","Teoria do crime — tipicidade","Ilicitude e causas excludentes","Culpabilidade","Iter criminis — tentativa e consumação","Concurso de pessoas","Concurso de crimes","Penas — espécies e aplicação","Crimes contra a Administração Pública","Crimes tributários — Lei 8.137/90","Lavagem de dinheiro — Lei 9.613/98","Crimes contra a fé pública"],
+  "Economia": ["Microeconomia — oferta e demanda","Elasticidade","Teoria do consumidor","Teoria da firma e custos","Estruturas de mercado","Falhas de mercado","Macroeconomia — conceitos básicos","PIB e contas nacionais","Política fiscal","Política monetária","Inflação e índices de preços","Setor externo — balança de pagamentos","Câmbio","Crescimento e desenvolvimento econômico","Economia brasileira — aspectos recentes"],
+  "Estatística": ["Estatística descritiva — medidas de posição","Medidas de dispersão","Distribuição de frequências","Probabilidade — conceitos e axiomas","Probabilidade condicional e independência","Teorema de Bayes","Variáveis aleatórias discretas","Variáveis aleatórias contínuas","Distribuição Binomial","Distribuição de Poisson","Distribuição Normal","Amostragem — tipos e técnicas","Estimação — pontual e intervalar","Testes de hipóteses","Qui-quadrado","Correlação e regressão linear"],
+  "Matemática Financeira": ["Juros simples","Juros compostos","Desconto simples (por fora e por dentro)","Desconto composto","Taxas equivalentes e proporcionais","Taxa nominal e efetiva","Séries de pagamentos — anuidades","VP e VF de anuidades","Sistemas de amortização — SAC","Sistemas de amortização — PRICE","Sistemas de amortização — SAM e americano","Capitalização contínua","TIR e VPL","Inflação e taxas reais"],
+  "Sistemas de Amortização": ["SAC — Sistema de Amortização Constante","PRICE — Sistema Francês","SAM — Sistema Americano Misto","Sistema Americano puro","Comparação entre sistemas","Tabela Price — cálculo de parcelas","Saldo devedor e amortização acumulada","Juros pagos ao longo do contrato","Refinanciamento e carência"],
+  "Direito Empresarial": ["Teoria da empresa","Empresário individual","Sociedades — tipos e constituição","Sociedade limitada","Sociedade anônima","Estabelecimento empresarial","Títulos de crédito — teoria geral","Duplicata","Cheque","Letra de câmbio e nota promissória","Contratos empresariais","Recuperação judicial e falência"],
+  "Tecnologia da Informação": ["Banco de dados relacionais","SQL — consultas e manipulação","Modelagem de dados — ER","Segurança da informação","Redes de computadores","Protocolo TCP/IP","Sistemas operacionais","Excel / Planilhas — funções avançadas","LGPD — Lei Geral de Proteção de Dados","Governança de TI","Inteligência artificial e machine learning — conceitos","Cloud computing"],
+};
+
+// ─── AUTOCOMPLETE TEMA ────────────────────────────────────────────────────────
+function getTopicosParaDisc() {
+  const disc = document.getElementById('disciplina').value;
+  return TOPICOS[disc] || Object.values(TOPICOS).flat();
+}
+
+function highlight(text, query) {
+  if (!query) return text;
+  const re = new RegExp('(' + query.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + ')', 'gi');
+  return text.replace(re, '<mark>$1</mark>');
+}
+
+function filtrarTopicos(query) {
+  const dd = document.getElementById('topicos-dropdown');
+  const lista = getTopicosParaDisc();
+  const disc = document.getElementById('disciplina').value;
+  const q = query.trim().toLowerCase();
+
+  let itens = q
+    ? lista.filter(t => t.toLowerCase().includes(q))
+    : lista;
+
+  if (itens.length === 0) { dd.style.display = 'none'; return; }
+
+  // Mostra label de disciplina se nenhuma selecionada (busca global)
+  let html = '';
+  if (!disc && q) {
+    const porDisc = {};
+    Object.entries(TOPICOS).forEach(([d, ts]) => {
+      const hits = ts.filter(t => t.toLowerCase().includes(q));
+      if (hits.length) porDisc[d] = hits;
+    });
+    Object.entries(porDisc).forEach(([d, ts]) => {
+      html += '<div class="topicos-section-label">' + d + '</div>';
+      ts.forEach(t => {
+        html += '<div class="topico-opt" onclick="selecionarTopico(\'' + t.replace(/'/g, "\\'") + '\')">' + highlight(t, query.trim()) + '</div>';
+      });
+    });
+  } else {
+    itens.forEach(t => {
+      html += '<div class="topico-opt" onclick="selecionarTopico(\'' + t.replace(/'/g, "\\'") + '\')">' + highlight(t, query.trim()) + '</div>';
+    });
+  }
+
+  dd.innerHTML = html;
+  dd.style.display = 'block';
+}
+
+function selecionarTopico(topico) {
+  document.getElementById('tema').value = topico;
+  document.getElementById('topicos-dropdown').style.display = 'none';
+  renderChips(topico);
+}
+
+function renderChips(topico) {
+  const disc = document.getElementById('disciplina').value;
+  const chips = document.getElementById('topicos-chips');
+  if (!disc || !TOPICOS[disc]) { chips.innerHTML = ''; return; }
+  // Mostra chips dos tópicos da disciplina como sugestões rápidas (primeiros 5)
+  const sugestoes = TOPICOS[disc].filter(t => t !== topico).slice(0, 5);
+  chips.innerHTML = sugestoes.map(t =>
+    '<span class="topico-chip" onclick="selecionarTopico(\'' + t.replace(/'/g,"\\'") + '\')" style="cursor:pointer;">' + t + '</span>'
+  ).join('');
+}
+
+// Fecha dropdown ao clicar fora
+document.addEventListener('click', e => {
+  if (!e.target.closest('#tema') && !e.target.closest('#topicos-dropdown')) {
+    const dd = document.getElementById('topicos-dropdown');
+    if (dd) dd.style.display = 'none';
+  }
+});
+
+// Atualiza chips quando disciplina muda
+document.addEventListener('change', e => {
+  if (e.target.id === 'disciplina') {
+    document.getElementById('tema').value = '';
+    document.getElementById('topicos-dropdown').style.display = 'none';
+    renderChips('');
+  }
+});
+// ─── STATE ───────────────────────────────────────────────────────────────────
+let entries = [];
+let aiEnabled = true;
+let activeFilter = 'todos';
+
+const STORAGE_KEY = 'caderno-erros-sefaz-go';
+
+// ─── STORAGE ─────────────────────────────────────────────────────────────────
+const IS_CLAUDE = window.location.hostname.includes('claude.ai') || window.location.hostname.includes('anthropic.com');
+
+async function loadEntries() {
+  if (IS_CLAUDE) {
+    try {
+      const result = await window.storage.get(STORAGE_KEY);
+      if (result && result.value) { entries = JSON.parse(result.value); return; }
+    } catch (e) {}
+  }
+  try {
+    const saved = localStorage.getItem(STORAGE_KEY);
+    if (saved) entries = JSON.parse(saved);
+  } catch (e) { entries = []; }
+}
+
+async function saveEntries() {
+  if (IS_CLAUDE) {
+    try { await window.storage.set(STORAGE_KEY, JSON.stringify(entries)); } catch (e) {}
+  }
+  // Sempre salva no localStorage também (funciona em qualquer ambiente)
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  } catch (e) { console.error('Erro ao salvar:', e); }
+}
+
+// ─── API KEY ─────────────────────────────────────────────────────────────────
+const APIKEY_KEY = 'caderno-erros-apikey';
+
+function getApiKey() {
+  // Dentro do Claude.ai não precisa de chave — o proxy injeta automaticamente
+  // Fora, usa a chave salva no localStorage
+  try { return localStorage.getItem(APIKEY_KEY) || ''; } catch(e) { return ''; }
+}
+
+function saveApiKey(key) {
+  try { localStorage.setItem(APIKEY_KEY, key); } catch(e) {}
+}
+
+function buildHeaders() {
+  const key = getApiKey();
+  const headers = { 'Content-Type': 'application/json' };
+  if (key) headers['x-api-key'] = key;
+  return headers;
+}
+
+function abrirApiKeyModal() {
+  const key = getApiKey();
+  document.getElementById('apikey-input').value = key;
+  document.getElementById('apikey-status').textContent = '';
+  document.getElementById('apikey-modal-overlay').classList.add('open');
+}
+
+function fecharApiKeyModal() {
+  document.getElementById('apikey-modal-overlay').classList.remove('open');
+}
+
+function toggleApiKeyVis() {
+  const inp = document.getElementById('apikey-input');
+  inp.type = inp.type === 'password' ? 'text' : 'password';
+}
+
+async function testarESalvarApiKey() {
+  const key = document.getElementById('apikey-input').value.trim();
+  const status = document.getElementById('apikey-status');
+  if (!key) { status.className = 'apikey-status err'; status.textContent = '⚠️ Cole sua chave antes de salvar.'; return; }
+  status.className = 'apikey-status'; status.textContent = '⏳ Testando conexão...';
+  try {
+    const r = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'x-api-key': key, 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({ model: 'claude-haiku-4-5-20251001', max_tokens: 10, messages: [{ role: 'user', content: 'ok' }] })
+    });
+    if (r.ok || r.status === 200) {
+      saveApiKey(key);
+      status.className = 'apikey-status ok'; status.textContent = '✅ Chave válida! Salva com sucesso.';
+      atualizarBarraApiKey();
+      setTimeout(fecharApiKeyModal, 1200);
+    } else {
+      const err = await r.json().catch(() => ({}));
+      status.className = 'apikey-status err';
+      status.textContent = '❌ ' + (err.error?.message || 'Chave inválida. Verifique e tente novamente.');
+    }
+  } catch(e) {
+    status.className = 'apikey-status err';
+    status.textContent = '❌ Erro de conexão. Verifique sua internet.';
+  }
+}
+
+function atualizarBarraApiKey() {
+  const key = getApiKey();
+  const bar = document.getElementById('apikey-bar');
+  const icon = document.getElementById('apikey-bar-icon');
+  const title = document.getElementById('apikey-bar-title');
+  const sub = document.getElementById('apikey-bar-sub');
+  if (key) {
+    bar.classList.add('ok');
+    icon.textContent = '✅';
+    title.textContent = 'API configurada';
+    sub.textContent = 'sk-ant-...' + key.slice(-6) + ' · clique para alterar';
+  } else {
+    bar.classList.remove('ok');
+    icon.textContent = '🔑';
+    title.textContent = 'Configure sua chave de API';
+    sub.textContent = 'Necessária para usar as funções de IA fora do Claude';
+  }
+}
+
+// ─── TABS ─────────────────────────────────────────────────────────────────────
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach((t,i) => {
+    t.classList.toggle('active', ['registrar','revisar','analise'][i] === tab);
+  });
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + tab).classList.add('active');
+  if (tab === 'revisar') renderEntries();
+  if (tab === 'analise') renderAnalise();
+}
+
+// ─── AI TOGGLE ───────────────────────────────────────────────────────────────
+function toggleAI() {
+  aiEnabled = !aiEnabled;
+  document.getElementById('toggle-switch').classList.toggle('on', aiEnabled);
+}
+
+// ─── DIAGNÓSTICO IA ──────────────────────────────────────────────────────────
+async function getResumo(disciplina, tipoErro, tema, questao, contexto) {
+  const prompt = `Você é professora de concursos SEFAZ. Uma candidata errou esta questão:
+
+Disciplina: ${disciplina || 'N/I'}
+Tema: ${tema || 'N/I'}
+Questão: ${questao || 'N/I'}
+${contexto ? 'O que ela pensou: ' + contexto : ''}
+
+Responda em UMA ÚNICA frase curta e direta, no formato:
+"Errado. [correção objetiva do conceito em até 15 palavras]."
+
+Exemplo: "Errado. A pena de morte é vedada, salvo em caso de guerra declarada."
+Só a frase, sem mais nada.`;
+
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { ...buildHeaders(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 100,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+  const data = await response.json();
+  return data.content.map(b => b.text || '').join('').trim();
+}
+
+async function getDiagnostico(disciplina, tipoErro, tema, questao, contexto) {
+  const prompt = `Você é uma professora especialista em concursos públicos, especialmente SEFAZ. 
+Uma candidata errou uma questão e quer entender o motivo e como revisar.
+
+Disciplina: ${disciplina || 'Não informada'}
+Tipo de erro: ${tipoErro || 'Não informado'}
+Tema/assunto: ${tema || 'Não informado'}
+Questão/contexto: ${questao || 'Não informado'}
+O que a candidata pensou: ${contexto || 'Não informado'}
+
+Responda em 3 partes curtas (máx 4 linhas cada):
+1. **Diagnóstico**: qual foi provavelmente o gap de conhecimento ou raciocínio
+2. **Ponto-chave**: o conceito exato que precisa ser dominado
+3. **Como revisar**: ação prática e específica para fixar
+
+Seja direta, concisa e focada no que importa para a prova.`;
+
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
+    method: "POST",
+    headers: { ...buildHeaders(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 600,
+      messages: [{ role: "user", content: prompt }]
+    })
+  });
+
+  const data = await response.json();
+  return data.content.map(b => b.text || '').join('');
+}
+
+// ─── SALVAR ───────────────────────────────────────────────────────────────────
+async function salvarRegistro() {
+  const disciplina = document.getElementById('disciplina').value;
+  const tipoErro = document.getElementById('tipo-erro').value;
+  const tema = document.getElementById('tema').value.trim();
+  const questao = document.getElementById('questao').value.trim();
+  const contexto = document.getElementById('contexto').value.trim();
+
+  if (!disciplina || !tema || !questao) {
+    showNotif('⚠️ Preencha disciplina, tema e questão');
+    return;
+  }
+
+  const btn = document.getElementById('btn-salvar');
+  btn.disabled = true;
+
+  let resumo = null;
+
+  if (aiEnabled) {
+    document.getElementById('ai-result-area').innerHTML = `
+      <div class="ai-result">
+        <div class="ai-result-header">✨ Analisando com IA <span class="spinner"></span></div>
+        <p class="loading-text">Gerando resumo...</p>
+      </div>`;
+
+    try {
+      resumo = await getResumo(disciplina, tipoErro, tema, questao, contexto);
+      document.getElementById('ai-result-area').innerHTML = `
+        <div class="ai-result">
+          <div class="ai-result-header">✨ Correção rápida</div>
+          <p style="font-style:italic;color:var(--ink);">${resumo}</p>
+        </div>`;
+    } catch (e) {
+      document.getElementById('ai-result-area').innerHTML = `
+        <div class="ai-result">
+          <div class="ai-result-header">⚠️ Erro na IA</div>
+          <p>Não foi possível gerar diagnóstico automático. O registro será salvo mesmo assim.</p>
+        </div>`;
+    }
+  }
+
+  const entry = {
+    id: Date.now(),
+    data: new Date().toLocaleDateString('pt-BR'),
+    dataISO: new Date().toISOString(),
+    disciplina,
+    tipoErro,
+    tema,
+    questao: questao.substring(0, 500),
+    contexto: contexto.substring(0, 200),
+    resumo,       // frase curta — salva no storage
+    // diagnostico completo NÃO é salvo — gerado sob demanda
+    mastered: false
+  };
+
+  entries.unshift(entry);
+  await saveEntries();
+
+  btn.disabled = false;
+  showNotif('✅ Registro salvo!');
+  setTimeout(clearForm, 1200);
+}
+
+function formatAI(text) {
+  return text
+    .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
+    .replace(/\n/g, '<br>');
+}
+
+function clearForm() {
+  ['disciplina','tipo-erro','tema','questao','contexto'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el.tagName === 'SELECT') el.selectedIndex = 0;
+    else el.value = '';
+  });
+  document.getElementById('ai-result-area').innerHTML = '';
+}
+
+// ─── REVISAR ──────────────────────────────────────────────────────────────────
+function getFilteredEntries() {
+  if (activeFilter === 'todos') return entries;
+  if (activeFilter === 'revisar') return entries.filter(e => !e.mastered);
+  if (activeFilter === 'dominado') return entries.filter(e => e.mastered);
+  return entries.filter(e => e.disciplina === activeFilter);
+}
+
+function renderEntries() {
+  const disciplines = [...new Set(entries.map(e => e.disciplina))].filter(Boolean);
+  const filterRow = document.getElementById('filter-row');
+  const filters = ['todos', 'revisar', 'dominado', ...disciplines];
+  const labels = { todos: 'Todos', revisar: 'Para revisar', dominado: 'Dominado' };
+
+  filterRow.innerHTML = filters.map(f =>
+    `<button class="filter-pill ${activeFilter === f ? 'active' : ''}" onclick="setFilter('${f}')">${labels[f] || f}</button>`
+  ).join('');
+
+  const filtered = getFilteredEntries();
+  const countEl = document.getElementById('entries-count');
+  countEl.textContent = `${filtered.length} registro${filtered.length !== 1 ? 's' : ''}`;
+
+  const list = document.getElementById('entries-list');
+
+  if (filtered.length === 0) {
+    list.innerHTML = `<div class="empty-state"><div class="empty-icon">📭</div><p>Nenhum registro encontrado.<br>Comece registrando seu primeiro erro!</p></div>`;
+    return;
+  }
+
+  list.innerHTML = filtered.map((e, i) => `
+    <div class="entry-card ${e.mastered ? 'mastered' : ''}" id="entry-${e.id}" style="animation-delay:${i*0.05}s">
+      <div class="entry-top">
+        <div class="entry-badges">
+          <span class="badge badge-disc">${e.disciplina}</span>
+          ${e.tipoErro ? `<span class="badge badge-tipo">${e.tipoErro}</span>` : ''}
+        </div>
+        <span class="entry-date">${e.data}</span>
+      </div>
+      <div class="entry-tema">${e.tema}</div>
+      ${e.questao ? `
+        <div class="entry-questao" id="q-${e.id}" onclick="toggleQuestao('${e.id}')">${escHtml(e.questao)}</div>
+        <div class="entry-questao-hint">toque para expandir</div>
+      ` : ''}
+      ${e.resumo ? `
+        <div class="entry-resumo">
+          <span class="entry-resumo-icon">✨</span>
+          <span>${e.correcaoIA ? '<s style="opacity:0.4;">' + e.resumo + '</s>' : e.resumo}</span>
+        </div>` : (e.diagnostico ? `
+        <div class="entry-resumo">
+          <span class="entry-resumo-icon">✨</span>${e.diagnostico.split('\n')[0].replace(/\*\*/g,'')}
+        </div>` : '')}
+      ${e.correcaoIA ? `
+        <div class="entry-correcao">
+          <span class="entry-correcao-icon">✏️</span>
+          <div class="entry-correcao-text">
+            <div class="entry-correcao-label">Correção manual</div>
+            ${escHtml(e.correcaoIA)}
+          </div>
+        </div>` : ''}
+      <div class="entry-footer">
+        <button class="btn-sm btn-corrigir" onclick="abrirCorrecao(${e.id})">
+          ⚠️ Corrigir IA
+        </button>
+        <button class="btn-sm btn-explain" id="btn-diag-${e.id}" onclick="toggleDiagnostico(${e.id})">
+          🔍 Análise completa
+        </button>
+        <button class="btn-sm btn-explain" id="btn-explain-${e.id}" onclick="explicarAssunto(${e.id})">
+          💡 Entender o assunto
+        </button>
+        <button class="btn-sm btn-mastered" onclick="toggleMastered(${e.id})">
+          ${e.mastered ? '↩ Desfazer' : '✓ Dominei'}
+        </button>
+        <button class="btn-sm btn-delete" onclick="deleteEntry(${e.id})">🗑 Remover</button>
+      </div>
+      <div id="correcao-area-${e.id}"></div>
+      <div id="diag-area-${e.id}"></div>
+      <div id="explain-area-${e.id}"></div>
+    </div>
+  `).join('');
+}
+
+function setFilter(f) {
+  activeFilter = f;
+  renderEntries();
+}
+
+function toggleQuestao(id) {
+  document.getElementById('q-' + id)?.classList.toggle('expanded');
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ─── CORREÇÃO MANUAL DA IA ───────────────────────────────────────────────────
+function abrirCorrecao(id) {
+  const area = document.getElementById('correcao-area-' + id);
+  if (area.innerHTML) { area.innerHTML = ''; return; }
+  const entry = entries.find(e => e.id === id);
+  const valorAtual = entry?.correcaoIA || '';
+  area.innerHTML = `
+    <div class="correcao-edit-area">
+      <div style="font-size:11px;font-weight:600;color:#c07020;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px;">
+        ✏️ Correção manual — substitui a resposta da IA
+      </div>
+      <textarea id="correcao-input-${id}" placeholder="Ex: Errado. Tratores agrícolas são imunes ao IPVA conforme art. 155, §6º, II, CF/88.">${escHtml(valorAtual)}</textarea>
+      <div style="display:flex;gap:8px;justify-content:flex-end;">
+        <button class="btn-sm btn-corrigir" onclick="document.getElementById('correcao-area-${id}').innerHTML=''">Cancelar</button>
+        <button class="btn-sm" style="background:linear-gradient(135deg,var(--orange),#e87030);color:white;border:none;"
+          onclick="salvarCorrecao(${id})">Salvar correção</button>
+      </div>
+    </div>`;
+  document.getElementById('correcao-input-' + id)?.focus();
+}
+
+async function salvarCorrecao(id) {
+  const input = document.getElementById('correcao-input-' + id);
+  if (!input) return;
+  const texto = input.value.trim();
+  const entry = entries.find(e => e.id === id);
+  if (!entry) return;
+  if (texto) {
+    entry.correcaoIA = texto;
+  } else {
+    delete entry.correcaoIA;
+  }
+  await saveEntries();
+  renderEntries();
+  showNotif(texto ? '✏️ Correção salva!' : '🗑 Correção removida');
+}
+
+async function toggleDiagnostico(id) {
+  const entry = entries.find(e => e.id === id);
+  if (!entry) return;
+
+  const btn = document.getElementById('btn-diag-' + id);
+  const area = document.getElementById('diag-area-' + id);
+
+  if (area.innerHTML && !area.innerHTML.includes('spinner-dark')) {
+    area.innerHTML = '';
+    btn.textContent = '🔍 Análise completa';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner-dark"></span> Gerando...';
+  area.innerHTML = '<div class="entry-explain"><div class="entry-explain-header">🔍 Análise <span class="spinner-dark"></span></div><div class="entry-explain-body" style="color:var(--ink-muted);">Analisando o erro...</div></div>';
+
+  try {
+    const texto = await getDiagnostico(entry.disciplina, entry.tipoErro, entry.tema, entry.questao, entry.contexto);
+    area.innerHTML = '<div class="entry-explain"><div class="entry-explain-header">🔍 Análise Completa</div><div class="entry-explain-body">' + formatAI(texto) + '</div></div>';
+    btn.disabled = false;
+    btn.textContent = '🔍 Fechar análise';
+  } catch(err) {
+    area.innerHTML = '<div class="entry-explain"><div class="entry-explain-header">⚠️ Erro</div><div class="entry-explain-body">Não foi possível gerar. Tente novamente.</div></div>';
+    btn.disabled = false;
+    btn.textContent = '🔍 Análise completa';
+  }
+}
+
+async function explicarAssunto(id) {
+  const entry = entries.find(e => e.id === id);
+  if (!entry) return;
+
+  const btn = document.getElementById('btn-explain-' + id);
+  const area = document.getElementById('explain-area-' + id);
+
+  // Toggle: se já tem explicação visível, fecha
+  if (area.innerHTML && !area.innerHTML.includes('spinner-dark')) {
+    area.innerHTML = '';
+    btn.textContent = '💡 Entender o assunto';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.innerHTML = `<span class="spinner-dark"></span> Gerando...`;
+  area.innerHTML = `
+    <div class="entry-explain">
+      <div class="entry-explain-header">📖 Explicação do Assunto <span class="spinner-dark"></span></div>
+      <div class="entry-explain-body" style="color:var(--ink-muted);">Preparando explicação focada na prova...</div>
+    </div>`;
+
+  const prompt = `Você é professora de concursos públicos. Explique o assunto abaixo de forma clara e direta para uma candidata que errou uma questão e precisa entender o conceito.
+
+Disciplina: ${entry.disciplina}
+Tema: ${entry.tema}
+Questão/contexto: ${entry.questao}
+${entry.contexto ? `O que ela pensou: ${entry.contexto}` : ''}
+
+Estruture sua resposta assim (use markdown simples com **negrito**):
+
+**O que é**: explicação do conceito central em 2-3 linhas
+**Por que confunde**: o erro clássico ou armadilha desse assunto
+**Regra de ouro**: uma frase curta e memorável pra fixar
+**Cuidado na prova**: o que a banca costuma explorar nesse tema
+
+Seja objetiva, didática e focada no que cai em SEFAZ. Máximo 12 linhas no total.`;
+
+  try {
+    const response = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { ...buildHeaders(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: prompt }]
+      })
+    });
+    const data = await response.json();
+    const text = data.content.map(b => b.text || '').join('');
+
+    area.innerHTML = `
+      <div class="entry-explain">
+        <div class="entry-explain-header">📖 Explicação do Assunto</div>
+        <div class="entry-explain-body">${formatAI(text)}</div>
+      </div>`;
+    btn.disabled = false;
+    btn.textContent = '💡 Fechar explicação';
+  } catch (err) {
+    area.innerHTML = `
+      <div class="entry-explain">
+        <div class="entry-explain-header">⚠️ Erro</div>
+        <div class="entry-explain-body">Não foi possível gerar a explicação. Tente novamente.</div>
+      </div>`;
+    btn.disabled = false;
+    btn.textContent = '💡 Entender o assunto';
+  }
+}
+
+async function toggleMastered(id) {
+  const e = entries.find(e => e.id === id);
+  if (e) { e.mastered = !e.mastered; await saveEntries(); renderEntries(); }
+}
+
+async function deleteEntry(id) {
+  entries = entries.filter(e => e.id !== id);
+  await saveEntries();
+  renderEntries();
+  renderAnalise();
+  showNotif('🗑 Registro removido');
+}
+
+// ─── ANÁLISE ──────────────────────────────────────────────────────────────────
+function renderAnalise() {
+  const total = entries.length;
+  const ativos = entries.filter(e => !e.mastered).length;
+  const dominados = entries.filter(e => e.mastered).length;
+  const comDiag = entries.filter(e => e.diagnostico).length;
+
+  document.getElementById('stats-grid').innerHTML = `
+    <div class="stat-card"><div class="stat-value">${total}</div><div class="stat-label">Total de erros</div></div>
+    <div class="stat-card"><div class="stat-value">${ativos}</div><div class="stat-label">Para revisar</div></div>
+    <div class="stat-card"><div class="stat-value">${dominados}</div><div class="stat-label">Dominados</div></div>
+    <div class="stat-card"><div class="stat-value">${comDiag}</div><div class="stat-label">Com diagnóstico IA</div></div>
+  `;
+
+  // Por disciplina
+  const byDisc = {};
+  entries.filter(e => !e.mastered).forEach(e => {
+    if (e.disciplina) byDisc[e.disciplina] = (byDisc[e.disciplina] || 0) + 1;
+  });
+  const discSorted = Object.entries(byDisc).sort((a,b) => b[1]-a[1]);
+  const maxDisc = discSorted[0]?.[1] || 1;
+
+  const cardDisc = document.getElementById('card-disciplinas');
+  if (discSorted.length === 0) {
+    cardDisc.innerHTML = '<div class="chart-title">Erros por Disciplina</div><div style="color:var(--ink-muted);font-size:13px;">Nenhum dado ainda</div>';
+  } else {
+    cardDisc.innerHTML = `<div class="chart-title">Erros por Disciplina (em aberto)</div>` +
+      discSorted.map(([d, c]) => `
+        <div class="bar-row">
+          <div class="bar-label" title="${d}">${d}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${(c/maxDisc*100).toFixed(0)}%"></div></div>
+          <div class="bar-count">${c}</div>
+        </div>
+      `).join('');
+  }
+
+  // Por tipo de erro
+  const byTipo = {};
+  entries.filter(e => !e.mastered).forEach(e => {
+    if (e.tipoErro) byTipo[e.tipoErro] = (byTipo[e.tipoErro] || 0) + 1;
+  });
+  const tipoSorted = Object.entries(byTipo).sort((a,b) => b[1]-a[1]);
+
+  const cardTipo = document.getElementById('card-tipos');
+  if (tipoSorted.length === 0) {
+    cardTipo.innerHTML = '<div class="chart-title">Tipos de Erro</div><div style="color:var(--ink-muted);font-size:13px;">Nenhum dado ainda</div>';
+  } else {
+    cardTipo.innerHTML = `<div class="chart-title">Tipos de Erro (em aberto)</div><div class="tipo-grid">` +
+      tipoSorted.map(([t, c]) => `
+        <div class="tipo-card">
+          <div class="tipo-card-val">${c}</div>
+          <div class="tipo-card-lab">${t}</div>
+        </div>
+      `).join('') + '</div>';
+  }
+}
+
+// ─── MODAL ────────────────────────────────────────────────────────────────────
+let selectedPeriodo = 'hoje';
+let selectedDiscs = new Set();
+
+function abrirModal() {
+  // Popula disciplinas
+  const discs = [...new Set(entries.map(e => e.disciplina))].filter(Boolean);
+  const cg = document.getElementById('check-disciplinas');
+  cg.innerHTML = discs.length === 0
+    ? '<div style="font-size:13px;color:var(--ink-muted);">Nenhuma disciplina registrada ainda.</div>'
+    : discs.map(d => `
+        <div class="check-opt ${selectedDiscs.has(d) ? 'selected' : ''}" onclick="toggleDisc(this,'${d.replace(/'/g,"\\'")}')">
+          <div class="check-box">${selectedDiscs.has(d) ? '✓' : ''}</div>${d}
+        </div>`).join('');
+  atualizarPreview();
+  document.getElementById('modal-relatorio').classList.add('open');
+}
+
+function fecharModal() {
+  document.getElementById('modal-relatorio').classList.remove('open');
+}
+
+function selectPeriodo(el) {
+  document.querySelectorAll('#radio-periodo .radio-opt').forEach(e => e.classList.remove('selected'));
+  el.classList.add('selected');
+  selectedPeriodo = el.dataset.val;
+  document.getElementById('custom-dates').style.display = selectedPeriodo === 'custom' ? 'block' : 'none';
+  atualizarPreview();
+}
+
+function toggleDisc(el, disc) {
+  if (selectedDiscs.has(disc)) { selectedDiscs.delete(disc); el.classList.remove('selected'); el.querySelector('.check-box').textContent = ''; }
+  else { selectedDiscs.add(disc); el.classList.add('selected'); el.querySelector('.check-box').textContent = '✓'; }
+  atualizarPreview();
+}
+
+function filtrarParaRelatorio() {
+  const now = new Date();
+  let from = null, to = new Date(now);
+  if (selectedPeriodo === 'hoje') { from = new Date(now); from.setHours(0,0,0,0); }
+  else if (selectedPeriodo === 'semana') { from = new Date(now); from.setDate(now.getDate() - 7); }
+  else if (selectedPeriodo === 'mes') { from = new Date(now); from.setMonth(now.getMonth() - 1); }
+  else if (selectedPeriodo === 'custom') {
+    const df = document.getElementById('date-from').value;
+    const dt = document.getElementById('date-to').value;
+    from = df ? new Date(df + 'T00:00:00') : null;
+    to = dt ? new Date(dt + 'T23:59:59') : to;
+  }
+  return entries.filter(e => {
+    const d = new Date(e.dataISO);
+    const okData = (!from || d >= from) && d <= to;
+    const okDisc = selectedDiscs.size === 0 || selectedDiscs.has(e.disciplina);
+    return okData && okDisc;
+  });
+}
+
+function atualizarPreview() {
+  const filtered = filtrarParaRelatorio();
+  document.getElementById('relatorio-preview').textContent =
+    `${filtered.length} registro${filtered.length !== 1 ? 's' : ''} encontrado${filtered.length !== 1 ? 's' : ''} com os filtros selecionados`;
+}
+
+// ─── GERAR RELATÓRIO ──────────────────────────────────────────────────────────
+async function gerarRelatorio() {
+  const filtered = filtrarParaRelatorio();
+  if (filtered.length === 0) { showNotif('⚠️ Nenhum registro com esses filtros'); return; }
+
+  const btn = document.getElementById('btn-gerar-relatorio');
+  btn.disabled = true; btn.textContent = 'Gerando...';
+  const pb = document.getElementById('progress-bar');
+  const pf = document.getElementById('progress-fill');
+  pb.style.display = 'block'; pf.style.width = '10%';
+
+  // 1. Pede análise geral à IA
+  const discMap = {};
+  filtered.forEach(e => { discMap[e.disciplina] = (discMap[e.disciplina]||0)+1; });
+  const tipoMap = {};
+  filtered.forEach(e => { if(e.tipoErro) tipoMap[e.tipoErro] = (tipoMap[e.tipoErro]||0)+1; });
+
+  const resumoEntradas = filtered.slice(0,20).map(e =>
+    `- [${e.disciplina}] ${e.tema} | Tipo: ${e.tipoErro || 'N/I'}`).join('\n');
+
+  const promptAnalise = `Você é professora especialista em concursos SEFAZ. Analise os erros abaixo de uma candidata e escreva um relatório de estudo.
+
+DADOS:
+Total de erros no período: ${filtered.length}
+Por disciplina: ${JSON.stringify(discMap)}
+Por tipo de erro: ${JSON.stringify(tipoMap)}
+Erros (amostra):
+${resumoEntradas}
+
+Escreva em português, de forma direta e motivadora. Estruture assim (use **negrito** para títulos de seção):
+
+**ANÁLISE GERAL**
+Parágrafo de 3-4 linhas interpretando o padrão dos erros.
+
+**DESTAQUES E PONTOS DE ATENÇÃO**
+Liste 3-4 pontos críticos que mais aparecem, com explicação curta de cada.
+
+**DISCIPLINAS CRÍTICAS**
+Liste as 2-3 disciplinas que mais precisam de atenção, com justificativa.
+
+**SUGESTÕES DE MELHORIA**
+3-4 ações práticas e específicas para as próximas semanas de estudo.
+
+**MENSAGEM FINAL**
+Uma frase de encorajamento personalizada e honesta.
+
+Seja objetiva, sem enrolação. Máximo 25 linhas no total.`;
+
+  let analiseIA = '';
+  pf.style.width = '30%';
+  try {
+    const resp = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: { ...buildHeaders(), 'anthropic-version': '2023-06-01', 'anthropic-dangerous-direct-browser-access': 'true' },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        messages: [{ role: "user", content: promptAnalise }]
+      })
+    });
+    const data = await resp.json();
+    analiseIA = data.content.map(b => b.text||'').join('');
+  } catch(e) { analiseIA = 'Não foi possível gerar análise automática.'; }
+
+  pf.style.width = '60%';
+
+  // 2. Monta HTML do relatório e converte para Blob para download
+  const periodoLabel = {
+    hoje: 'Hoje', semana: 'Última semana', mes: 'Último mês',
+    tudo: 'Todo o período', custom: 'Período personalizado'
+  }[selectedPeriodo] || selectedPeriodo;
+
+  const discLabel = selectedDiscs.size > 0 ? [...selectedDiscs].join(', ') : 'Todas';
+  const dataRelatorio = new Date().toLocaleDateString('pt-BR', {day:'2-digit',month:'long',year:'numeric'});
+
+  // Formata análise IA
+  function parseAI(txt) {
+    return txt
+      .replace(/\*\*(.*?)\*\*/g, '<b style="color:#9b7fc4">$1</b>')
+      .replace(/\n/g, '<br>');
+  }
+
+  // Monta seções de erros agrupados por disciplina
+  const byDisc = {};
+  filtered.forEach(e => { if(!byDisc[e.disciplina]) byDisc[e.disciplina] = []; byDisc[e.disciplina].push(e); });
+
+  let errosHtml = '';
+  for (const [disc, errs] of Object.entries(byDisc)) {
+    errosHtml += '<div style="margin-bottom:24px;">'
+      + '<div style="background:linear-gradient(135deg,#e8d0f5,#f5d0e0);padding:8px 16px;border-radius:8px;margin-bottom:12px;">'
+      + '<b style="color:#5a2a7a;font-size:14px;">' + disc + '</b>'
+      + '<span style="font-size:12px;color:#9a70aa;margin-left:8px;">' + errs.length + ' erro' + (errs.length!==1?'s':'') + '</span>'
+      + '</div>';
+    errs.forEach(function(e) {
+      errosHtml += '<div style="border:1px solid #e8ddf0;border-radius:10px;padding:14px;margin-bottom:10px;background:#fff9fb;">'
+        + '<div style="font-weight:600;color:#2a1f2e;font-size:13px;margin-bottom:4px;">' + e.tema + '</div>'
+        + (e.tipoErro ? '<div style="display:inline-block;background:#fff0f5;color:#c96b8a;font-size:11px;padding:2px 10px;border-radius:20px;margin-bottom:8px;">' + e.tipoErro + '</div>' : '')
+        + (e.questao ? '<div style="font-size:12px;color:#5a4a60;background:#f5eef8;border-radius:8px;padding:10px;margin-bottom:8px;line-height:1.6;">' + e.questao.substring(0,300) + (e.questao.length>300?'...':'') + '</div>' : '')
+        + (e.diagnostico ? '<div style="background:linear-gradient(135deg,#fdf0f7,#f0eeff);border-radius:8px;padding:10px;border-left:3px solid #9b7fc4;">'
+          + '<div style="font-size:10px;font-weight:600;color:#9b7fc4;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px;">✨ Diagnóstico IA</div>'
+          + '<div style="font-size:12px;color:#5a4a60;line-height:1.7;">' + e.diagnostico.replace(/\*\*(.*?)\*\*/g,'<b>$1</b>').replace(/\n/g,'<br>') + '</div>'
+          + '</div>' : '')
+        + '<div style="font-size:11px;color:#9a8aa0;margin-top:6px;">Registrado em ' + e.data + '</div>'
+        + '</div>';
+    });
+    errosHtml += '</div>';
+  }
+
+  const statsCards = Object.entries(discMap).sort((a,b)=>b[1]-a[1]).slice(0,4).map(function(pair) {
+    const d = pair[0], c = pair[1];
+    return '<div style="background:white;border:1px solid #e8ddf0;border-radius:12px;padding:16px;text-align:center;">'
+      + '<div style="font-family:\'DM Serif Display\',serif;font-size:28px;color:#9b7fc4;">' + c + '</div>'
+      + '<div style="font-size:11px;color:#9a8aa0;margin-top:4px;">' + d.split('/')[0].trim() + '</div>'
+      + '</div>';
+  }).join('');
+
+  const html = '<!DOCTYPE html>\n'
+    + '<html lang="pt-BR">\n<head>\n<meta charset="UTF-8">\n'
+    + '<title>Relatório de Erros — SEFAZ-GO</title>\n'
+    + '<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">\n'
+    + '<style>body{font-family:\'DM Sans\',Arial,sans-serif;background:#fdf8f5;color:#2a1f2e;margin:0;padding:0;}'
+    + '.page{max-width:800px;margin:0 auto;padding:48px 40px;}'
+    + '@media print{body{background:white;}.page{padding:20px;}}</style>\n'
+    + '</head>\n<body>\n<div class="page">\n'
+    + '<div style="text-align:center;padding:40px 0 32px;border-bottom:2px solid #e8ddf0;margin-bottom:36px;">'
+    + '<div style="font-size:11px;letter-spacing:3px;text-transform:uppercase;color:#c96b8a;font-weight:600;margin-bottom:8px;">SEFAZ-GO · 2026</div>'
+    + '<div style="font-family:\'DM Serif Display\',serif;font-size:36px;color:#2a1f2e;line-height:1.2;">Relatório de <span style="color:#9b7fc4;font-style:italic;">Erros</span></div>'
+    + '<div style="font-size:13px;color:#9a8aa0;margin-top:10px;">Gerado em ' + dataRelatorio + '</div>'
+    + '<div style="display:flex;justify-content:center;gap:20px;margin-top:20px;flex-wrap:wrap;">'
+    + '<div style="background:#f5eeff;border-radius:20px;padding:6px 18px;font-size:12px;color:#9b7fc4;font-weight:600;">📅 ' + periodoLabel + '</div>'
+    + '<div style="background:#fff0f5;border-radius:20px;padding:6px 18px;font-size:12px;color:#c96b8a;font-weight:600;">📚 ' + discLabel + '</div>'
+    + '<div style="background:#f0fff5;border-radius:20px;padding:6px 18px;font-size:12px;color:#5a9a70;font-weight:600;">' + filtered.length + ' registros</div>'
+    + '</div></div>'
+    + '<div style="background:linear-gradient(135deg,#f5eeff,#fff0f8);border-radius:16px;padding:28px;margin-bottom:36px;border:1px solid #e0d0f0;">'
+    + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">'
+    + '<span style="font-size:22px;">✨</span>'
+    + '<div style="font-family:\'DM Serif Display\',serif;font-size:20px;color:#2a1f2e;">Análise Inteligente</div>'
+    + '</div>'
+    + '<div style="font-size:14px;color:#5a4a60;line-height:1.8;">' + parseAI(analiseIA) + '</div>'
+    + '</div>'
+    + '<div style="margin-bottom:36px;">'
+    + '<div style="font-family:\'DM Serif Display\',serif;font-size:20px;margin-bottom:16px;">Estatísticas do Período</div>'
+    + '<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;">' + statsCards + '</div>'
+    + '</div>'
+    + '<div>'
+    + '<div style="font-family:\'DM Serif Display\',serif;font-size:20px;margin-bottom:20px;">Registros Detalhados</div>'
+    + errosHtml
+    + '</div>'
+    + '<div style="text-align:center;padding:32px 0 0;border-top:1px solid #e8ddf0;margin-top:20px;font-size:12px;color:#9a8aa0;">'
+    + 'Caderno de Erros SEFAZ-GO · Gerado automaticamente com análise IA'
+    + '</div>\n</div>\n</body>\n</html>';
+
+  pf.style.width = '90%';
+
+  // Download
+  const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `relatorio-erros-sefaz-${new Date().toISOString().slice(0,10)}.html`;
+  document.body.appendChild(a); a.click();
+  document.body.removeChild(a); URL.revokeObjectURL(url);
+
+  pf.style.width = '100%';
+  setTimeout(() => {
+    pb.style.display = 'none'; pf.style.width = '0%';
+    btn.disabled = false; btn.textContent = 'Gerar e baixar';
+    fecharModal();
+    showNotif('✅ Relatório baixado!');
+  }, 600);
+}
+
+// ─── NOTIFICAÇÃO ─────────────────────────────────────────────────────────────
+function showNotif(msg) {
+  const el = document.getElementById('notif');
+  el.textContent = msg;
+  el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+(async () => {
+  await loadEntries();
+  atualizarBarraApiKey();
+})();
+</script>
+</body>
+</html>
